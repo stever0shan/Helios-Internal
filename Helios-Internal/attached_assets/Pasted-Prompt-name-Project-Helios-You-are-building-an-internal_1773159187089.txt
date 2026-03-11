@@ -1,0 +1,177 @@
+Prompt name: "Project Helios"
+
+You are building an internal operations platform demo for a solar and home energy company called Solanta, based in Brooklyn, NYC. They install rooftop solar panels, heat pumps, EV chargers, smart home automation systems, and perform energy efficiency audits. They serve Brooklyn, Queens, the Bronx, Staten Island, and parts of New Jersey.
+
+Their current pain point: they use HubSpot as their CRM, Zapier for automation, DocuSign for contracts, Sunvoy for customer-facing monitoring, CompanyCam for photos, Google Drive for documents, and custom spreadsheets for proposals. They want ONE platform to replace all of this.
+
+This demo should show what that unified platform looks like. Use realistic fake data with real NYC addresses, boroughs, and neighborhoods. The design should be modern, professional, and dark-themed — dark navy sidebar, clean white/light gray content area, teal/green accent colors. The Solanta brand color is green. Make it look like a real enterprise tool, not a toy.
+
+Navigation (Sidebar)
+Fixed dark sidebar on the left with:
+
+Solanta logo at the top (use a placeholder or green "S" icon)
+Dashboard
+Pipeline
+Customers
+Scheduling
+Proposals
+Documents
+Reports
+Settings
+User avatar + role badge at the bottom (show "Dean Santa — Super Admin")
+Screen 1: Dashboard
+Top row — 6 summary metric cards:
+
+Active Projects (show number like 47)
+Pending Permits (DOB) (show 12)
+Proposals Awaiting Response (show 8)
+NYSERDA Rebates in Progress (show 15)
+Site Audits This Week (show 6)
+Revenue This Month (show $284,500)
+Each card should have an icon, the metric number large, the label below, and a subtle trend indicator (up/down arrow with percentage).
+
+Middle section — Today's Schedule:
+A table/list of today's jobs with columns:
+
+Customer Name
+Address (real NYC addresses like "1847 Flatbush Ave, Brooklyn" or "42-15 Queens Blvd, Sunnyside")
+Service Type (color-coded badge: Solar = green, Heat Pump = blue, EV Charger = orange, Smart Home = purple, Efficiency Audit = yellow)
+Stage (e.g. "Site Audit", "Installation", "Inspection")
+Assigned Crew/Foreman
+Time Show 6-8 rows of realistic data.
+Bottom section — split into two columns:
+
+Left: "Recent Activity" feed — show 8-10 log items like "Permit EL approved for Rodriguez — 482 Atlantic Ave", "Site audit photos uploaded for Chen — 89-12 Parsons Blvd", "NYSERDA rebate submitted for Williams — $4,200", "Contract signed by Patel — 1523 Victory Blvd, SI"
+Right: "Alerts & Follow-ups" — show 5-6 items like "Proposal sent 7 days ago — no response (Garcia)", "Permit expiring in 3 days (Thompson)", "Credit approval pending 5 days (Lee)", "Rebate application incomplete (Jackson)"
+Screen 2: Pipeline (Kanban Board)
+Top bar:
+
+Filter dropdown: "All Services" / Solar / Heat Pump / EV Charger / Smart Home / Efficiency Audit
+Search bar
+Sort by: "Date Added" / "Priority" / "Borough"
+View toggle: Kanban (default) / List view
+Kanban columns matching their actual workflow stages:
+
+Lead
+Site Audit Scheduled
+Site Audit Complete
+Credit Approved
+Final Design Created
+Planset Approved
+EL Permit Approved
+GC Permit Approved
+Install Scheduled
+Installed
+DOB Inspection
+PTO (Permission to Operate)
+Project Complete
+The columns should be horizontally scrollable since there are 13 of them.
+
+Each card in the pipeline shows:
+
+Customer last name
+Short address (e.g. "482 Atlantic Ave, BK")
+Service type icon + color badge
+Days in current stage (e.g. "3d" in a small gray chip)
+Funding source tags: small pills showing "NYSERDA", "Cash", "Climate First", "Service Finance", etc.
+Assigned sales rep initials in a small avatar circle
+Populate each column with 2-5 realistic cards. Make the cards draggable if possible.
+
+Screen 3: Job Detail Page
+When you click any card from the Pipeline or Dashboard, it opens a full job detail page.
+
+Header section:
+
+Customer full name, large
+Address
+Phone, email
+Service type badge (color-coded)
+Current stage with a horizontal progress bar showing all 13 stages, highlighting the current one
+"Days in pipeline: 34" indicator
+Left column (2/3 width):
+
+Section 1 — Project Team:
+
+Sales Rep: name + avatar
+Foreman: name + avatar
+Crew: 2-3 names
+Design Engineer: name
+Section 2 — Workflow Checklist:
+Interactive checklist with checkboxes. Items depend on service type but for solar include:
+
+☑ Lead entered into CRM
+☑ Aurora design created
+☑ Proposal sent to customer
+☑ Contract signed via DocuSign
+☑ Site audit scheduled
+☑ Drone flight completed
+☑ Pix4D measurements processed
+☑ Photos uploaded to CompanyCam
+☑ Site audit review complete
+☑ Final design created in AutoCAD
+☐ Planset created with wiring diagram
+☐ PE/RA approval received
+☐ ACP5 asbestos form filed (pre-1987 building)
+☐ NYSERDA rebate application submitted
+☐ DOB NOW account activated
+☐ EL permit filed
+☐ GC (SL) permit filed
+☐ Funding verified by Risk Manager
+☐ Installation scheduled
+☐ Installation complete
+☐ DOB inspection — Pass/Fail
+☐ Utility interconnection (PTO) filed
+☐ Rebate invoicing complete
+☐ Letter of Completion (LOC) submitted
+☐ Client notified — project complete
+Show the first ~12 checked and the rest unchecked to indicate progress.
+
+Section 3 — Notes & Activity Log:
+A chronological feed of notes with timestamps and user names. Include 5-6 entries like:
+
+"Mar 3 — Dean S.: Customer confirmed availability for site audit Thursday"
+"Mar 1 — Alex R.: Uploaded 47 drone photos to CompanyCam"
+"Feb 28 — Maria L.: Credit approved via Climate First, $32,400 loan amount"
+"Feb 25 — Dean S.: Proposal v2 sent after adjusting panel count from 18 to 22" Add a text input at the bottom to "Add a note..."
+Right column (1/3 width):
+
+Section 1 — Funding & Incentives:
+
+Funding Source 1: "Climate First Loan — $32,400" with status badge "Approved ✓"
+Funding Source 2: "NYSERDA EFS Rebate — $4,200" with status badge "Submitted, Pending"
+Funding Source 3: "Federal ITC (30%) — $8,100" with status badge "Applied at filing"
+Total Project Value: $44,700
+Section 2 — Property Details:
+
+Property Type: "Row House — Flat Roof"
+Borough: Brooklyn
+Built: 1972 (show "Pre-1987 — ACP5 Required" warning badge)
+Utility: Con Edison
+Flood Zone: No
+Open Violations: None
+Meter Info: "Single meter, 200A panel"
+Section 3 — Documents:
+A list of document links with file icons:
+
+📄 Proposal_v2_Rodriguez.pdf
+📄 Signed_Agreement_Rodriguez.pdf
+📄 Final_Design_2pg.pdf
+📄 Planset_Wiring.pdf
+📄 ACP5_Form.pdf
+📄 EL_Permit_Application.pdf
+📄 Site_Audit_Photos.zip
+Upload button at bottom
+Section 4 — Scheduling:
+
+Next Event: "Installation — Mar 15, 2026, 8:00 AM"
+Assigned Crew: show names
+Small mini-calendar or date display
+General Requirements:
+Make all screens fully functional with navigation between them
+Clicking a pipeline card opens the job detail page
+Use a consistent design system throughout
+Mobile responsive if possible
+Use realistic names: Rodriguez, Chen, Patel, Williams, Thompson, Garcia, Lee, Jackson, Kim, Santos
+All addresses should be real NYC locations across Brooklyn, Queens, Bronx, Staten Island
+Include loading states and hover effects for polish
+The overall feel should be: "this is a real tool built specifically for a NYC solar installer"
