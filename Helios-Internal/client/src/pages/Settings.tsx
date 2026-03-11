@@ -8,19 +8,29 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
 
 const teamMembers = [
-  { name: "Dean Santa", role: "Super Admin", initials: "DS", email: "dean@solanta.com" },
-  { name: "Alex Rivera", role: "Sales Rep", initials: "AR", email: "alex@solanta.com" },
-  { name: "Carlos Mendez", role: "Foreman", initials: "CM", email: "carlos@solanta.com" },
-  { name: "Sarah Kim", role: "Design Engineer", initials: "SK", email: "sarah@solanta.com" },
-  { name: "Robert Park", role: "Foreman", initials: "RP", email: "robert@solanta.com" },
-  { name: "Tom Rivera", role: "Design Engineer", initials: "TR", email: "tom@solanta.com" },
-  { name: "Pete Jackson", role: "Foreman", initials: "PJ", email: "pete@solanta.com" },
-  { name: "Mike Thompson", role: "Foreman", initials: "MT", email: "mike@solanta.com" },
+  { name: "Steve Roshan", role: "Super Admin", initials: "SR", email: "steve@helios.com" },
+  { name: "Alex Rivera", role: "Sales Rep", initials: "AR", email: "alex@helios.com" },
+  { name: "Carlos Mendez", role: "Foreman", initials: "CM", email: "carlos@helios.com" },
+  { name: "Sarah Kim", role: "Design Engineer", initials: "SK", email: "sarah@helios.com" },
+  { name: "Robert Park", role: "Foreman", initials: "RP", email: "robert@helios.com" },
+  { name: "Tom Rivera", role: "Design Engineer", initials: "TR", email: "tom@helios.com" },
+  { name: "Pete Jackson", role: "Foreman", initials: "PJ", email: "pete@helios.com" },
+  { name: "Mike Thompson", role: "Foreman", initials: "MT", email: "mike@helios.com" },
 ];
 
 export default function Settings() {
+  const { toast } = useToast();
+
+  const handleSave = (section: string) => {
+    toast({
+      title: "Settings saved",
+      description: `${section} settings have been updated successfully.`,
+    });
+  };
+
   return (
     <div data-testid="settings-page">
       <div className="mb-6">
@@ -59,35 +69,37 @@ export default function Settings() {
               <div className="flex items-center gap-4">
                 <Avatar className="w-16 h-16">
                   <AvatarFallback className="bg-primary/15 text-primary text-xl font-bold">
-                    DS
+                    SR
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <h3 className="font-semibold">Dean Santa</h3>
+                  <h3 className="font-semibold">Steve Roshan</h3>
                   <p className="text-sm text-muted-foreground">Super Admin</p>
                   <Button variant="outline" size="sm" className="mt-2">Change Photo</Button>
                 </div>
               </div>
               <Separator />
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>First Name</Label>
-                  <Input defaultValue="Dean" />
+                  <Input defaultValue="Steve" />
                 </div>
                 <div className="space-y-2">
                   <Label>Last Name</Label>
-                  <Input defaultValue="Santa" />
+                  <Input defaultValue="Roshan" />
                 </div>
                 <div className="space-y-2">
                   <Label>Email</Label>
-                  <Input defaultValue="dean@solanta.com" />
+                  <Input defaultValue="steve@helios.com" />
                 </div>
                 <div className="space-y-2">
                   <Label>Phone</Label>
                   <Input defaultValue="(718) 555-0100" />
                 </div>
               </div>
-              <Button data-testid="button-save-profile" size="sm">Save Changes</Button>
+              <Button data-testid="button-save-profile" size="sm" onClick={() => handleSave("Profile")}>
+                Save Changes
+              </Button>
             </CardContent>
           </Card>
         </TabsContent>
@@ -97,7 +109,11 @@ export default function Settings() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base">Team Members</CardTitle>
-                <Button size="sm" variant="outline">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => toast({ title: "Invite sent", description: "Team invitation email has been sent." })}
+                >
                   <Users className="w-4 h-4 mr-2" />
                   Invite Member
                 </Button>
@@ -137,10 +153,10 @@ export default function Settings() {
               <CardTitle className="text-base">Company Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Company Name</Label>
-                  <Input defaultValue="Solanta Energy" />
+                  <Input defaultValue="Helios Energy" />
                 </div>
                 <div className="space-y-2">
                   <Label>License Number</Label>
@@ -164,7 +180,9 @@ export default function Settings() {
                   ))}
                 </div>
               </div>
-              <Button data-testid="button-save-company" size="sm">Save Changes</Button>
+              <Button data-testid="button-save-company" size="sm" onClick={() => handleSave("Company")}>
+                Save Changes
+              </Button>
             </CardContent>
           </Card>
         </TabsContent>
@@ -191,7 +209,9 @@ export default function Settings() {
                   <Switch defaultChecked={i < 4} />
                 </div>
               ))}
-              <Button data-testid="button-save-notifications" size="sm">Save Preferences</Button>
+              <Button data-testid="button-save-notifications" size="sm" onClick={() => handleSave("Notification")}>
+                Save Preferences
+              </Button>
             </CardContent>
           </Card>
         </TabsContent>

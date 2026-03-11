@@ -9,11 +9,16 @@ import {
   BarChart3,
   Settings,
   Sun,
+  Moon,
+  LogOut,
+  X,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { useTheme } from "@/lib/theme";
 
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, href: "/" },
@@ -26,8 +31,18 @@ const navItems = [
   { label: "Settings", icon: Settings, href: "/settings" },
 ];
 
-export default function Sidebar() {
+interface SidebarProps {
+  onClose?: () => void;
+}
+
+export default function Sidebar({ onClose }: SidebarProps) {
   const [location] = useLocation();
+  const { theme, toggleTheme } = useTheme();
+
+  const handleLogout = () => {
+    localStorage.removeItem("helios-auth");
+    window.location.reload();
+  };
 
   return (
     <aside
@@ -42,8 +57,18 @@ export default function Sidebar() {
           <Sun className="w-5 h-5 text-primary-foreground" />
         </div>
         <span className="text-lg font-semibold text-sidebar-foreground tracking-tight">
-          Solanta
+          Helios
         </span>
+        {onClose && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="ml-auto h-8 w-8 p-0 text-sidebar-foreground/60 hover:text-sidebar-foreground"
+            onClick={onClose}
+          >
+            <X className="w-4 h-4" />
+          </Button>
+        )}
       </div>
 
       <nav className="flex-1 px-3 mt-2 space-y-0.5">
@@ -57,6 +82,7 @@ export default function Sidebar() {
                 <Link href={item.href}>
                   <div
                     data-testid={`nav-${item.label.toLowerCase()}`}
+                    onClick={onClose}
                     className={cn(
                       "flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13.5px] font-medium cursor-pointer transition-colors duration-150",
                       isActive
@@ -82,16 +108,39 @@ export default function Sidebar() {
         })}
       </nav>
 
+      <div className="px-3 pb-2">
+        <div className="flex items-center gap-1">
+          <Tooltip delayDuration={300}>
+            <TooltipTrigger asChild>
+              <button
+                onClick={toggleTheme}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors w-full"
+              >
+                {theme === "dark" ? (
+                  <Sun className="w-[18px] h-[18px] shrink-0" />
+                ) : (
+                  <Moon className="w-[18px] h-[18px] shrink-0" />
+                )}
+                {theme === "dark" ? "Light Mode" : "Dark Mode"}
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right" className="text-xs">
+              Toggle theme
+            </TooltipContent>
+          </Tooltip>
+        </div>
+      </div>
+
       <div className="p-4 border-t border-sidebar-border">
         <div className="flex items-center gap-3">
           <Avatar className="w-9 h-9 border border-sidebar-border">
             <AvatarFallback className="bg-primary/20 text-primary text-xs font-semibold">
-              DS
+              SR
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
             <p className="text-[13px] font-medium text-sidebar-foreground truncate">
-              Dean Santa
+              Steve Roshan
             </p>
             <Badge
               variant="outline"
@@ -100,6 +149,19 @@ export default function Sidebar() {
               Super Admin
             </Badge>
           </div>
+          <Tooltip delayDuration={300}>
+            <TooltipTrigger asChild>
+              <button
+                onClick={handleLogout}
+                className="text-sidebar-foreground/40 hover:text-sidebar-foreground transition-colors p-1"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right" className="text-xs">
+              Sign out
+            </TooltipContent>
+          </Tooltip>
         </div>
       </div>
     </aside>

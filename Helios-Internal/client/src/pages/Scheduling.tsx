@@ -1,8 +1,10 @@
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Calendar as CalendarIcon, Clock, MapPin, User } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { todaySchedule, jobs, SERVICE_COLORS } from "@/lib/data";
 
 const upcomingEvents = jobs
@@ -19,8 +21,47 @@ const upcomingEvents = jobs
   }))
   .slice(0, 10);
 
+// Parse event dates for calendar highlights
+const eventDates = jobs
+  .filter(j => j.nextEvent)
+  .map(j => {
+    const parsed = new Date(j.nextEvent!.date);
+    return isNaN(parsed.getTime()) ? null : parsed;
+  })
+  .filter(Boolean) as Date[];
+
 export default function Scheduling() {
   const [, navigate] = useLocation();
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 400);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Filter events for selected date
+  const selectedDateStr = selectedDate?.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  const eventsForDate = upcomingEvents.filter(e => {
+    const eventDate = new Date(e.date);
+    return selectedDate && eventDate.toDateString() === selectedDate.toDateString();
+  });
+
+  if (loading) {
+    return (
+      <div>
+        <Skeleton className="h-8 w-40 mb-2" />
+        <Skeleton className="h-4 w-64 mb-6" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <Skeleton className="h-64 rounded-lg mb-6" />
+            <Skeleton className="h-48 rounded-lg" />
+          </div>
+          <Skeleton className="h-80 rounded-lg" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div data-testid="scheduling-page">
@@ -33,8 +74,8 @@ export default function Scheduling() {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-6">
-        <div className="col-span-2 space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
           <Card className="border border-card-border">
             <CardHeader className="pb-3">
               <CardTitle className="text-base font-semibold flex items-center gap-2">
@@ -89,12 +130,15 @@ export default function Scheduling() {
             <CardHeader className="pb-3">
               <CardTitle className="text-base font-semibold flex items-center gap-2">
                 <CalendarIcon className="w-4 h-4 text-primary" />
-                Upcoming Events
+                {eventsForDate.length > 0
+                  ? `Events on ${selectedDateStr}`
+                  : "Upcoming Events"
+                }
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
               <div className="divide-y divide-card-border/50">
-                {upcomingEvents.map(event => (
+                {(eventsForDate.length > 0 ? eventsForDate : upcomingEvents).map(event => (
                   <div
                     key={event.id}
                     data-testid={`upcoming-event-${event.id}`}
@@ -113,7 +157,7 @@ export default function Scheduling() {
                           {event.serviceType}
                         </Badge>
                       </div>
-                      <p className="text-xs text-muted-foreground">{event.type} — {event.address}</p>
+                      <p className="text-xs text-muted-foreground">{event.type} - {event.address}</p>
                     </div>
                     {event.crew.length > 0 && (
                       <span className="text-[10px] text-muted-foreground shrink-0">
@@ -122,6 +166,11 @@ export default function Scheduling() {
                     )}
                   </div>
                 ))}
+                {eventsForDate.length === 0 && selectedDate && selectedDate.toDateString() !== new Date().toDateString() && (
+                  <div className="px-4 py-6 text-center text-sm text-muted-foreground">
+                    No events scheduled for {selectedDateStr}
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -135,7 +184,10 @@ export default function Scheduling() {
             <CardContent className="flex justify-center">
               <Calendar
                 mode="single"
-                selected={new Date()}
+                selected={selectedDate}
+                onSelect={setSelectedDate}
+                modifiers={{ hasEvent: eventDates }}
+                modifiersClassNames={{ hasEvent: "bg-primary/15 font-bold text-primary" }}
                 className="rounded-md"
               />
             </CardContent>

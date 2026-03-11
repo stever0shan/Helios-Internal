@@ -1,8 +1,11 @@
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { FileText, DollarSign, Clock, CheckCircle, XCircle, Send } from "lucide-react";
+import { FileText, DollarSign, Clock, CheckCircle, XCircle, Send, Download } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
 import { jobs, SERVICE_COLORS } from "@/lib/data";
 
 const proposals = [
@@ -11,7 +14,7 @@ const proposals = [
   { id: "p3", jobId: "j003", customer: "Priya Patel", address: "1523 Victory Blvd, SI", serviceType: "Heat Pump" as const, value: 21000, status: "Signed", sentDate: "Feb 22, 2026", version: "v1" },
   { id: "p4", jobId: "j004", customer: "Marcus Williams", address: "3847 White Plains Rd, BX", serviceType: "Solar" as const, value: 53600, status: "Signed", sentDate: "Feb 10, 2026", version: "v3" },
   { id: "p5", jobId: "j005", customer: "Jennifer Thompson", address: "156 Court St, BK", serviceType: "EV Charger" as const, value: 4200, status: "Signed", sentDate: "Mar 1, 2026", version: "v1" },
-  { id: "p6", jobId: "j006", customer: "Roberto Garcia", address: "1847 Flatbush Ave, BK", serviceType: "Solar" as const, value: 0, status: "Draft", sentDate: "—", version: "v1" },
+  { id: "p6", jobId: "j006", customer: "Roberto Garcia", address: "1847 Flatbush Ave, BK", serviceType: "Solar" as const, value: 0, status: "Draft", sentDate: "-", version: "v1" },
   { id: "p7", jobId: "j007", customer: "Sun-Hee Kim", address: "42-15 Queens Blvd, QN", serviceType: "Smart Home" as const, value: 8500, status: "Sent", sentDate: "Mar 1, 2026", version: "v1" },
   { id: "p8", jobId: "j012", customer: "Angela Martinez", address: "611 W 180th St, MN", serviceType: "Solar" as const, value: 39000, status: "Signed", sentDate: "Feb 20, 2026", version: "v1" },
 ];
@@ -23,12 +26,47 @@ const statusConfig = {
   Expired: { icon: XCircle, color: "border-red-500/30 text-red-600 bg-red-500/10" },
 };
 
+function exportProposalsCSV() {
+  const headers = ["Customer", "Address", "Service", "Value", "Version", "Sent Date", "Status"];
+  const rows = proposals.map(p => [p.customer, p.address, p.serviceType, p.value, p.version, p.sentDate, p.status]);
+  const csv = [headers.join(","), ...rows.map(r => r.map(v => `"${v}"`).join(","))].join("\n");
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "helios-proposals.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export default function Proposals() {
   const [, navigate] = useLocation();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 350);
+    return () => clearTimeout(timer);
+  }, []);
 
   const signed = proposals.filter(p => p.status === "Signed").length;
   const sent = proposals.filter(p => p.status === "Sent").length;
   const totalValue = proposals.reduce((sum, p) => sum + p.value, 0);
+
+  if (loading) {
+    return (
+      <div>
+        <Skeleton className="h-8 w-36 mb-2" />
+        <Skeleton className="h-4 w-52 mb-6" />
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Skeleton key={i} className="h-20 rounded-lg" />
+          ))}
+        </div>
+        <Skeleton className="h-64 rounded-lg" />
+      </div>
+    );
+  }
 
   return (
     <div data-testid="proposals-page">
@@ -39,13 +77,26 @@ export default function Proposals() {
             Track and manage customer proposals
           </p>
         </div>
-        <Button data-testid="button-new-proposal" size="sm">
-          <FileText className="w-4 h-4 mr-2" />
-          New Proposal
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              exportProposalsCSV();
+              toast({ title: "Exported", description: "Proposals exported to CSV" });
+            }}
+          >
+            <Download className="w-4 h-4 mr-2" />
+            Export
+          </Button>
+          <Button data-testid="button-new-proposal" size="sm" onClick={() => toast({ title: "New Proposal", description: "Proposal creator would open here." })}>
+            <FileText className="w-4 h-4 mr-2" />
+            New Proposal
+          </Button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <Card className="border border-card-border">
           <CardContent className="p-4 flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center">
@@ -118,7 +169,7 @@ export default function Proposals() {
                       </Badge>
                     </td>
                     <td className="py-3 px-4 font-medium">
-                      {p.value > 0 ? `$${p.value.toLocaleString()}` : "—"}
+                      {p.value > 0 ? `$${p.value.toLocaleString()}` : "-"}
                     </td>
                     <td className="py-3 px-4 text-muted-foreground">{p.version}</td>
                     <td className="py-3 px-4 text-muted-foreground">{p.sentDate}</td>

@@ -1,9 +1,11 @@
-import { useState } from "react";
-import { Search, FileText, FileArchive, FolderOpen, Upload, Filter } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, FileText, FileArchive, FolderOpen, Upload, Filter, Download } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
 import { jobs } from "@/lib/data";
 
 const allDocs = jobs.flatMap(j =>
@@ -23,13 +25,48 @@ const categories = [
   { name: "Photos", count: allDocs.filter(d => d.name.includes("Photo") || d.type === "zip").length, icon: FileArchive, color: "text-amber-500" },
 ];
 
+function exportDocsCSV() {
+  const headers = ["Document", "Customer", "Type"];
+  const rows = allDocs.map(d => [d.name, d.customer, d.type]);
+  const csv = [headers.join(","), ...rows.map(r => r.map(v => `"${v}"`).join(","))].join("\n");
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "helios-documents.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export default function Documents() {
   const [search, setSearch] = useState("");
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 350);
+    return () => clearTimeout(timer);
+  }, []);
 
   const filtered = allDocs.filter(d =>
     d.name.toLowerCase().includes(search.toLowerCase()) ||
     d.customer.toLowerCase().includes(search.toLowerCase())
   );
+
+  if (loading) {
+    return (
+      <div>
+        <Skeleton className="h-8 w-36 mb-2" />
+        <Skeleton className="h-4 w-52 mb-6" />
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Skeleton key={i} className="h-16 rounded-lg" />
+          ))}
+        </div>
+        <Skeleton className="h-64 rounded-lg" />
+      </div>
+    );
+  }
 
   return (
     <div data-testid="documents-page">
@@ -40,13 +77,26 @@ export default function Documents() {
             {allDocs.length} documents across all projects
           </p>
         </div>
-        <Button data-testid="button-upload-doc" size="sm">
-          <Upload className="w-4 h-4 mr-2" />
-          Upload
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              exportDocsCSV();
+              toast({ title: "Exported", description: "Document list exported to CSV" });
+            }}
+          >
+            <Download className="w-4 h-4 mr-2" />
+            Export
+          </Button>
+          <Button data-testid="button-upload-doc" size="sm" onClick={() => toast({ title: "Upload", description: "File upload dialog would open here." })}>
+            <Upload className="w-4 h-4 mr-2" />
+            Upload
+          </Button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-5 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
         {categories.map(cat => (
           <Card key={cat.name} className="border border-card-border">
             <CardContent className="p-4 flex items-center gap-3">

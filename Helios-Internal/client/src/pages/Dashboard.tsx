@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import {
   Briefcase,
@@ -17,6 +18,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   dashboardMetrics,
   todaySchedule,
@@ -98,8 +100,62 @@ function alertIcon(severity: AlertItem["severity"]) {
   }
 }
 
+function useRealTimeClock() {
+  const [time, setTime] = useState(new Date());
+  useEffect(() => {
+    const interval = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(interval);
+  }, []);
+  return time;
+}
+
+function DashboardSkeleton() {
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <Skeleton className="h-8 w-40 mb-2" />
+          <Skeleton className="h-4 w-64" />
+        </div>
+        <Skeleton className="h-4 w-48" />
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <Card key={i} className="border border-card-border">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <Skeleton className="w-9 h-9 rounded-lg" />
+                <Skeleton className="w-12 h-4" />
+              </div>
+              <Skeleton className="h-8 w-16 mb-1" />
+              <Skeleton className="h-3 w-24" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+      <Card className="mb-6 border border-card-border">
+        <CardContent className="p-4">
+          <Skeleton className="h-6 w-40 mb-4" />
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-12 w-full mb-2" />
+          ))}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const [, navigate] = useLocation();
+  const [loading, setLoading] = useState(true);
+  const now = useRealTimeClock();
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 600);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) return <DashboardSkeleton />;
 
   return (
     <div data-testid="dashboard-page">
@@ -107,15 +163,20 @@ export default function Dashboard() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
-            Welcome back, Dean. Here's what's happening today.
+            Welcome back, Steve. Here's what's happening today.
           </p>
         </div>
-        <div className="text-sm text-muted-foreground">
-          {new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
+        <div className="text-right">
+          <div className="text-sm text-muted-foreground">
+            {now.toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
+          </div>
+          <div className="text-lg font-semibold tabular-nums tracking-tight">
+            {now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-6 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
         {metricCards.map((card) => (
           <Card
             key={card.label}
@@ -200,7 +261,7 @@ export default function Dashboard() {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="border border-card-border">
           <CardHeader className="pb-3">
             <CardTitle className="text-base font-semibold">Recent Activity</CardTitle>
